@@ -1,0 +1,33 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    text-align: center;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 300px;
+}
+
+h1 {
+    color: #333;
+}
+
+.sensor-data {
+    margin-top: 20px;
+}
+
+h2 {
+    color: #555;
+}
+
+span {
+    font-weight: bold;
+    color: #00aaff;
+}

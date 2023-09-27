@@ -1,0 +1,111 @@
+<<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estação Meteorológica</title>
+    <link rel="stylesheet" href="station.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Estação Meteorológica</h1>
+        <div class="sensor-data">
+            <h2>Temperatura: <span id="temperature">--°C</span></h2>
+            <h2>Umidade: <span id="humidity">--%</span></h2>
+        </div>
+        <div class="chart-container">
+            <canvas id="temperatureChart"></canvas>
+            <canvas id="humidityChart"></canvas>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/blynk-library@0.6.1/dist/blynk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var temperatureData = [];
+        var humidityData = [];
+        var labels = [];
+
+        var temperatureChart = new Chart(document.getElementById('temperatureChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Temperatura (°C)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    data: temperatureData,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        var humidityChart = new Chart(document.getElementById('humidityChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Umidade (%)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    data: humidityData,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        function updateCharts(newTemperature, newHumidity) {
+            temperatureData.push(newTemperature);
+            humidityData.push(newHumidity);
+            labels.push(new Date().toLocaleTimeString());
+
+            if (temperatureData.length > 20) {
+                temperatureData.shift();
+                humidityData.shift();
+                labels.shift();
+            }
+
+            temperatureChart.update();
+            humidityChart.update();
+        }
+
+        var AUTH_TOKEN = "GKllOzsEZ2Jhl-BLLukcM0kINGTjmY3B";
+
+        var blynk = new Blynk.Blynk(AUTH_TOKEN);
+
+        var temperatureWidget = new blynk.VirtualPin(0);
+        var humidityWidget = new blynk.VirtualPin(1);
+
+        temperatureWidget.on('write', function(param) {
+            var newTemperature = param[0];
+            document.getElementById('temperature').textContent = newTemperature + "°C";
+            updateCharts(newTemperature, humidityData[humidityData.length - 1]);
+        });
+
+        humidityWidget.on('write', function(param) {
+            var newHumidity = param[0];
+            document.getElementById('humidity').textContent = newHumidity + "%";
+            updateCharts(temperatureData[temperatureData.length - 1], newHumidity);
+        });
+    </script>
+</body>
+</html>
+
+
